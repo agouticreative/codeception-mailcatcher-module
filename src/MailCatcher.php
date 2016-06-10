@@ -23,8 +23,8 @@ class MailCatcher extends Module
 
     public function _initialize()
     {
-        $url = trim($this->config['url'], '/') . ':' . $this->config['port'];
-        $this->mailcatcher = new \Guzzle\Http\Client($url);
+        $this->url = trim($this->config['url'], '/') . ':' . $this->config['port'];
+        $this->mailcatcher = new \Guzzle\Http\Client($this->url);
 
         if (isset($this->config['guzzleRequestOptions'])) {
             foreach ($this->config['guzzleRequestOptions'] as $option => $value) {
@@ -314,6 +314,7 @@ class MailCatcher extends Module
         $response = $this->mailcatcher->get("/messages/{$id}.json")->send();
         $message = $response->json();
         $message['source'] = quoted_printable_decode($message['source']);
+        $message['url'] = "{$this->url}/messages/{$message['id']}.html";
         return $message;
     }
 
